@@ -3050,76 +3050,47 @@ function listenMessages() {
 
 
 
+
 /* ==========================================
    SEND MESSAGE
    ========================================== */
 
-$("sendForm")
-  .onsubmit =
-  async event => {
+$("sendForm").onsubmit = async event => {
+  event.preventDefault();
 
-    event.preventDefault();
+  const text = $("messageInput").value.trim();
 
+  if (
+    !currentUser ||
+    !currentRoom ||
+    !currentFriend ||
+    !text
+  ) {
+    return;
+  }
 
-    const text =
-      $("messageInput")
-        .value
-        .trim();
+  try {
+    await db
+      .collection("rooms")
+      .doc(currentRoom)
+      .collection("messages")
+      .add({
+        senderId: currentUser.uid,
+        text: text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
+    $("messageInput").value = "";
 
-    if (
-      !currentUser ||
-      !currentRoom ||
-      !currentFriend ||
-      !text
-    ) {
+  } catch (error) {
+    console.error("ส่งข้อความไม่สำเร็จ:", error);
 
-      return;
-
-    }
-
-
-    try {
-
-
-      await db
-        .collection("rooms")
-        .doc(currentRoom)
-        .collection("messages")
-        .add({
-
-          senderId:
-            currentUser.uid,
-
-          recipientId:
-            currentFriend.uid,
-
-          text:
-
-            text,
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-
-      $("messageInput")
-        .value = "";
-
-
-    } catch (error) {
-
-      alert(
-        "ส่งข้อความไม่สำเร็จ: " +
-        error.message
-      );
-
-    }
-
-  };
+    alert(
+      "ส่งข้อความไม่สำเร็จ: " +
+      error.message
+    );
+  }
+};
 
 
 
