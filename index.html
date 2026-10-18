@@ -727,6 +727,19 @@ function getInitial(name) {
 
 }
 
+function formatThaiTime(timestamp) {
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return "กำลังบันทึกเวลา...";
+  }
+
+  return new Intl.DateTimeFormat("th-TH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Bangkok"
+  }).format(timestamp.toDate()) + " น.";
+}
+
 
 /* ==========================================
    THAI PROVINCES
@@ -1435,100 +1448,63 @@ async function openPrivateChat(
    REALTIME MESSAGES
    ========================================== */
 
+
 function listenMessages() {
-
   if (unsubscribeMessages) {
-
     unsubscribeMessages();
-
   }
-
 
   $("messages").replaceChildren();
 
+  const roomId = currentRoom;
 
-  unsubscribeMessages =
-    db.collection("rooms")
-      .doc(currentRoom)
-      .collection("messages")
-      .orderBy("createdAt")
-      .limit(100)
-      .onSnapshot(snapshot => {
+  unsubscribeMessages = db
+    .collection("rooms")
+    .doc(roomId)
+    .collection("messages")
+    .orderBy("createdAt")
+    .limit(100)
+    .onSnapshot(snapshot => {
+      if (currentRoom !== roomId) return;
 
-        $("messages")
-          .replaceChildren();
+      $("messages").replaceChildren();
 
+      snapshot.forEach(doc => {
+        const data = doc.data();
 
-        snapshot.forEach(doc => {
+        const message = document.createElement("div");
+        message.className = "message";
 
-          const data =
-            doc.data();
+        const isMine = data.senderId === currentUser.uid;
 
+        if (isMine) {
+          message.classList.add("me");
+        }
 
-          const message =
-            document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "message-name";
+        name.textContent = isMine
+          ? "คุณ"
+          : currentFriend?.name || "เพื่อน";
 
+        const text = document.createElement("div");
+        text.textContent = data.text || "";
 
-          message.className =
-            "message";
+        const time = document.createElement("div");
+        time.className = "message-time";
+        time.textContent = formatThaiTime(data.createdAt);
 
+        message.append(name, text, time);
 
-          if (
-            data.senderId ===
-            currentUser.uid
-          ) {
-
-            message.classList.add("me");
-
-          }
-
-
-          const name =
-            document.createElement("div");
-
-          name.className =
-            "message-name";
-
-
-          name.textContent =
-            data.senderId ===
-            currentUser.uid
-              ? "คุณ"
-              : currentFriend?.name || "เพื่อน";
-
-
-          const text =
-            document.createElement("div");
-
-
-          text.textContent =
-            data.text || "";
-
-
-          message.append(
-            name,
-            text
-          );
-
-
-          $("messages")
-            .appendChild(message);
-
-        });
-
-
-        $("messages").scrollTop =
-          $("messages").scrollHeight;
-
-
-      }, error => {
-
-        console.error(error);
-
+        $("messages").appendChild(message);
       });
 
-}
+      $("messages").scrollTop = $("messages").scrollHeight;
 
+    }, error => {
+      console.error("โหลดข้อความไม่สำเร็จ", error);
+    });
+}
 
 /* ==========================================
    SEND MESSAGE
