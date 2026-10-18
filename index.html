@@ -3,776 +3,127 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Patch-at | แชทกับเพื่อน</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patch-at | ห้องแชท</title>
   <style>
     * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      font-family: Arial, Tahoma, sans-serif;
-      background: #f1f5f9;
-      color: #172033;
+      margin: 0; font-family: Arial, sans-serif;
+      background: #f1f5f9; color: #172033;
     }
-
-    header {
-      background: #2563eb;
-      color: white;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    header h2 { margin: 0; }
-
-    main {
-      max-width: 1100px;
-      margin: 20px auto;
-      padding: 12px;
-    }
-
+    .wrap { max-width: 480px; margin: 40px auto; padding: 16px; }
     .card {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 8px #0001;
+      background: white; border-radius: 18px; padding: 24px;
+      box-shadow: 0 5px 24px #00000012;
     }
-
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin: 5px 0;
-      border-radius: 8px;
-      font-size: 16px;
+    h1 { text-align: center; color: #2563eb; }
+    input, button {
+      width: 100%; padding: 12px; margin: 7px 0;
+      border-radius: 9px; font-size: 16px;
     }
-
-    input, select {
-      border: 1px solid #cbd5e1;
-      background: white;
-      color: #172033;
-    }
-
-    button {
-      border: 0;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    button.secondary { background: #475569; }
-    button.light { background: #e2e8f0; color: #172033; }
-    button.active { background: #1d4ed8; }
-
-    .hidden { display: none !important; }
-    .muted { color: #64748b; font-size: 13px; }
-    .status { white-space: pre-wrap; overflow-wrap: anywhere; }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 14px;
-      align-items: start;
-    }
-
-    .member {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      background: #f8fafc;
-      color: #172033;
-      text-align: left;
-      border: 1px solid #e2e8f0;
-    }
-
-    .member.active { background: #dbeafe; border-color: #60a5fa; }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-      border-radius: 50%;
-      background: #dbeafe;
-      color: #1d4ed8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      font-weight: bold;
-    }
-
-    .member-info { min-width: 0; flex: 1; }
-    .member-name { font-weight: bold; overflow-wrap: anywhere; }
-    .member-sub { color: #64748b; font-size: 12px; margin-top: 3px; }
-
-    #messages {
-      height: 420px;
-      overflow-y: auto;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 10px;
-      margin: 12px 0;
-    }
-
-    .msg {
-      max-width: 85%;
-      width: fit-content;
-      background: white;
-      padding: 10px 12px;
-      margin: 8px 0;
-      border-radius: 12px;
-      overflow-wrap: anywhere;
-      border: 1px solid #e2e8f0;
-    }
-
-    .msg.mine {
-      margin-left: auto;
-      background: #dbeafe;
-      border-color: #bfdbfe;
-    }
-
-    .msg-name { font-size: 12px; color: #475569; margin-bottom: 4px; }
-    .msg-time { font-size: 11px; color: #64748b; margin-top: 5px; }
-
-    .chat-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .chat-head h3 { margin: 0; }
-    .chat-head button { width: auto; }
-
-    #sendForm {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    #sendForm input { flex: 1; min-width: 0; }
-    #sendForm button { width: 85px; }
-
-    .profile-line { margin: 6px 0; }
-
-    @media (max-width: 700px) {
-      .layout { grid-template-columns: 1fr; }
-      #messages { height: 50vh; min-height: 260px; }
-      header { padding: 12px; }
-      header h2 { font-size: 20px; }
-      .card { padding: 13px; }
-    }
+    input { border: 1px solid #cbd5e1; }
+    button { border: 0; background: #2563eb; color: white; cursor: pointer; }
+    button.secondary { background: #e2e8f0; color: #172033; }
+    #status { overflow-wrap: anywhere; font-size: 14px; }
+    .hidden { display: none; }
   </style>
 </head>
-
 <body>
-  <header>
-    <div>
-      <h2>💬 Patch-at</h2>
-      <div style="font-size:13px">แชทกับเพื่อนแบบเรียลไทม์</div>
-    </div>
-    <button id="logoutBtn" class="secondary hidden"
-            style="width:auto">ออกจากระบบ</button>
-  </header>
-
-  <main>
-    <section id="authBox" class="card">
-      <h3>สมัครสมาชิก / เข้าสู่ระบบ</h3>
-
-      <label for="email">อีเมล</label>
-      <input id="email" type="email" autocomplete="email"
-             placeholder="กรอกอีเมล" required>
-
-      <label for="password">รหัสผ่าน</label>
-      <input id="password" type="password"
-             autocomplete="current-password"
-             placeholder="อย่างน้อย 6 ตัวอักษร" required>
-
-      <div style="border-top:1px solid #e2e8f0;margin:16px 0"></div>
-      <h4>ข้อมูลสำหรับสมัครสมาชิก</h4>
-
-      <input id="regName" maxlength="40"
-             placeholder="ชื่อที่ใช้แสดงในแชท">
-      <input id="regAge" type="number" min="1" max="120"
-             placeholder="อายุ">
-      <select id="regGender">
-        <option value="">เลือกเพศ</option>
-        <option value="ชาย">ชาย</option>
-        <option value="หญิง">หญิง</option>
-        <option value="ไม่ระบุ">ไม่ระบุ</option>
-      </select>
-      <input id="regProvince" maxlength="60"
-             placeholder="จังหวัด">
-
-      <button id="registerBtn">สมัครสมาชิก</button>
-      <button id="loginBtn" class="secondary">เข้าสู่ระบบ</button>
-
-      <p class="muted">
-        กรุณาใช้อีเมลที่เข้าถึงได้จริง และอย่าใช้รหัสผ่านเดียวกับบัญชีสำคัญอื่น
-      </p>
-    </section>
-
-    <section id="profileSetup" class="card hidden">
-      <h3>ตั้งค่าโปรไฟล์ของคุณ</h3>
-      <p>กรอกข้อมูลให้ครบก่อนเริ่มใช้งานแชท</p>
-      <input id="setupName" maxlength="40" placeholder="ชื่อที่แสดง">
-      <input id="setupAge" type="number" min="1" max="120"
-             placeholder="อายุ">
-      <select id="setupGender">
-        <option value="">เลือกเพศ</option>
-        <option value="ชาย">ชาย</option>
-        <option value="หญิง">หญิง</option>
-        <option value="ไม่ระบุ">ไม่ระบุ</option>
-      </select>
-      <input id="setupProvince" maxlength="60" placeholder="จังหวัด">
-      <button id="saveProfileBtn">บันทึกโปรไฟล์</button>
-    </section>
-
-    <section id="appBox" class="hidden">
-      <div class="card">
-        <h3 id="welcome">ยินดีต้อนรับ</h3>
-        <div id="myProfile" class="muted"></div>
-        <button id="editProfileBtn" class="light">แก้ไขโปรไฟล์</button>
-        <div id="editProfileBox" class="hidden">
-          <input id="editName" maxlength="40" placeholder="ชื่อที่แสดง">
-          <input id="editAge" type="number" min="1" max="120"
-                 placeholder="อายุ">
-          <select id="editGender">
-            <option value="">เลือกเพศ</option>
-            <option value="ชาย">ชาย</option>
-            <option value="หญิง">หญิง</option>
-            <option value="ไม่ระบุ">ไม่ระบุ</option>
-          </select>
-          <input id="editProvince" maxlength="60" placeholder="จังหวัด">
-          <button id="updateProfileBtn">บันทึกการแก้ไข</button>
-          <button id="cancelEditBtn" class="secondary">ยกเลิก</button>
-        </div>
-      </div>
-
-      <div class="layout">
-        <aside class="card">
-          <h3>👥 ห้องและสมาชิก</h3>
-          <button id="groupBtn">🌍 ห้องแชทกลุ่ม</button>
-          <input id="searchMember" placeholder="ค้นหาชื่อสมาชิก...">
-          <div id="memberList">
-            <p class="muted">กำลังโหลดสมาชิก...</p>
-          </div>
-        </aside>
-
-        <section class="card">
-          <div class="chat-head">
-            <h3 id="roomTitle">เลือกห้องแชท</h3>
-          </div>
-          <p id="chatHint" class="muted">
-            เลือกห้องกลุ่มหรือกดชื่อสมาชิกเพื่อเริ่มสนทนา
-          </p>
-
-          <div id="messages"></div>
-
-          <form id="sendForm" class="hidden">
-            <input id="messageInput" maxlength="2000"
-                   placeholder="พิมพ์ข้อความ..." autocomplete="off" required>
-            <button type="submit">ส่ง</button>
-          </form>
-          <p class="muted">เวอร์ชันนี้รองรับข้อความเท่านั้น ยังไม่รองรับการส่งรูปภาพ</p>
-        </section>
-      </div>
-    </section>
-
+  <main class="wrap">
     <section class="card">
-      <div id="status" class="status">สถานะ: พร้อมใช้งาน</div>
+      <h1>Patch-at</h1>
+      <p style="text-align:center">ห้องแชทของคุณ</p>
+
+      <div id="auth">
+        <input id="email" type="email" placeholder="อีเมล" autocomplete="email">
+        <input id="password" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัว" autocomplete="current-password">
+        <button id="signup">สมัครสมาชิก</button>
+        <button id="login">เข้าสู่ระบบ</button>
+        <button id="reset" class="secondary">ลืมรหัสผ่าน</button>
+      </div>
+
+      <div id="account" class="hidden">
+        <p>เข้าสู่ระบบแล้ว: <strong id="who"></strong></p>
+        <button id="logout" class="secondary">ออกจากระบบ</button>
+      </div>
+      <p id="status" role="status">กำลังเตรียมระบบ...</p>
     </section>
   </main>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      sendPasswordResetEmail, onAuthStateChanged, signOut,
+      setPersistence, browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  <script>
+    // นำค่า Config จริงจาก Firebase มาใส่ในส่วนนี้
     const firebaseConfig = {
-      apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizGNYpoxm4dco",
+      apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
       authDomain: "patch-at.firebaseapp.com",
       projectId: "patch-at",
-      storageBucket: "patch-at.firebasestorage.app",
-      messagingSenderId: "201035067162",
       appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    const $ = id => document.getElementById(id);
-
-    let currentUser = null;
-    let myProfile = null;
-    let currentRoom = null;
-    let roomLabel = "";
-    let stopMessages = null;
-    let stopMembers = null;
-    let memberProfiles = [];
-
-    function status(message) {
-      $("status").textContent = "สถานะ: " + message;
-    }
-
-    function show(el, visible) {
-      $(el).classList.toggle("hidden", !visible);
-    }
-
-    function cleanText(value, maxLength = 60) {
-      return String(value || "").trim().slice(0, maxLength);
-    }
-
-    function validateProfile(name, age, gender, province) {
-      if (!name || name.length > 40) {
-        throw new Error("กรุณากรอกชื่อไม่เกิน 40 ตัวอักษร");
-      }
-
-      const ageNum = Number(age);
-      if (!Number.isInteger(ageNum) || ageNum < 1 || ageNum > 120) {
-        throw new Error("กรุณากรอกอายุระหว่าง 1 ถึง 120 ปี");
-      }
-
-      if (!["ชาย", "หญิง", "ไม่ระบุ"].includes(gender)) {
-        throw new Error("กรุณาเลือกเพศ");
-      }
-
-      if (!province || province.length > 60) {
-        throw new Error("กรุณากรอกจังหวัด");
-      }
-
-      return {
-        name,
-        age: ageNum,
-        gender,
-        province
-      };
-    }
-
-    async function saveMyProfile(data) {
-      if (!currentUser) throw new Error("กรุณาเข้าสู่ระบบใหม่");
-
-      const profile = validateProfile(
-        cleanText(data.name, 40),
-        data.age,
-        data.gender,
-        cleanText(data.province, 60)
-      );
-
-      const ref = db.collection("profiles").doc(currentUser.uid);
-      const old = await ref.get();
-
-      const payload = {
-        name: profile.name,
-        age: profile.age,
-        gender: profile.gender,
-        province: profile.province,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      if (!old.exists) {
-        payload.createdAt =
-          firebase.firestore.FieldValue.serverTimestamp();
-      }
-
-      await ref.set(payload, { merge: true });
-      myProfile = { ...profile };
-      renderMyProfile();
-      status("บันทึกโปรไฟล์สำเร็จ");
-      show("profileSetup", false);
-      show("appBox", true);
-      startMembersListener();
-    }
-
-    $("registerBtn").onclick = async () => {
-      try {
-        const email = cleanText($("email").value, 254);
-        const password = $("password").value;
-
-        if (!email || !password) {
-          throw new Error("กรุณากรอกอีเมลและรหัสผ่าน");
-        }
-
-        const profile = validateProfile(
-          cleanText($("regName").value, 40),
-          $("regAge").value,
-          $("regGender").value,
-          cleanText($("regProvince").value, 60)
-        );
-
-        $("registerBtn").disabled = true;
-        const credential = await auth.createUserWithEmailAndPassword(
-          email, password
-        );
-
-        currentUser = credential.user;
-        await saveMyProfile(profile);
-        show("authBox", false);
-        show("appBox", true);
-        status("สมัครสมาชิกสำเร็จ");
-      } catch (e) {
-        status(errorMessage(e));
-      } finally {
-        $("registerBtn").disabled = false;
-      }
+    const status = (message) => {
+      document.getElementById("status").textContent = message;
     };
+    const value = (id) => document.getElementById(id).value.trim();
 
-    $("loginBtn").onclick = async () => {
-      try {
-        const email = cleanText($("email").value, 254);
-        const password = $("password").value;
+    try {
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
 
-        if (!email || !password) {
-          throw new Error("กรุณากรอกอีเมลและรหัสผ่าน");
-        }
+      await setPersistence(auth, browserLocalPersistence);
 
-        await auth.signInWithEmailAndPassword(email, password);
-        status("เข้าสู่ระบบสำเร็จ");
-      } catch (e) {
-        status(errorMessage(e));
-      }
-    };
-
-    $("logoutBtn").onclick = async () => {
-      try {
-        await auth.signOut();
-      } catch (e) {
-        status(errorMessage(e));
-      }
-    };
-
-    function errorMessage(e) {
-      const messages = {
-        "auth/email-already-in-use": "อีเมลนี้สมัครแล้ว กรุณาเข้าสู่ระบบ",
-        "auth/invalid-email": "รูปแบบอีเมลไม่ถูกต้อง",
-        "auth/weak-password": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
-        "auth/invalid-credential": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-        "auth/network-request-failed": "เชื่อมต่ออินเทอร์เน็ตไม่ได้",
-        "permission-denied": "Firebase ปฏิเสธสิทธิ์ กรุณาตรวจ Firestore Rules",
-        "unavailable": "บริการ Firebase ไม่พร้อม กรุณาลองใหม่"
-      };
-
-      return messages[e.code] || e.message || "เกิดข้อผิดพลาด";
-    }
-
-    function renderMyProfile() {
-      if (!myProfile) return;
-
-      $("welcome").textContent = "สวัสดี " + myProfile.name;
-      $("myProfile").textContent =
-        "อายุ " + myProfile.age + " ปี · " +
-        myProfile.gender + " · จังหวัด" + myProfile.province;
-
-      $("editName").value = myProfile.name;
-      $("editAge").value = myProfile.age;
-      $("editGender").value = myProfile.gender;
-      $("editProvince").value = myProfile.province;
-    }
-
-    $("editProfileBtn").onclick = () => {
-      show("editProfileBox", true);
-    };
-
-    $("cancelEditBtn").onclick = () => {
-      show("editProfileBox", false);
-    };
-
-    $("updateProfileBtn").onclick = async () => {
-      try {
-        await saveMyProfile({
-          name: $("editName").value,
-          age: $("editAge").value,
-          gender: $("editGender").value,
-          province: $("editProvince").value
-        });
-        show("editProfileBox", false);
-      } catch (e) {
-        status(errorMessage(e));
-      }
-    };
-
-    $("saveProfileBtn").onclick = async () => {
-      try {
-        await saveMyProfile({
-          name: $("setupName").value,
-          age: $("setupAge").value,
-          gender: $("setupGender").value,
-          province: $("setupProvince").value
-        });
-      } catch (e) {
-        status(errorMessage(e));
-      }
-    };
-
-    function startMembersListener() {
-      if (stopMembers) stopMembers();
-
-      stopMembers = db.collection("profiles").onSnapshot(snapshot => {
-        memberProfiles = [];
-
-        snapshot.forEach(doc => {
-          if (doc.id !== currentUser.uid) {
-            memberProfiles.push({ id: doc.id, ...doc.data() });
-          }
-        });
-
-        memberProfiles.sort((a, b) =>
-          String(a.name || "").localeCompare(String(b.name || ""), "th")
-        );
-
-        renderMembers();
-      }, e => status(errorMessage(e)));
-    }
-
-    function renderMembers() {
-      const list = $("memberList");
-      list.replaceChildren();
-
-      const query = cleanText($("searchMember").value, 60).toLowerCase();
-
-      const filtered = memberProfiles.filter(p =>
-        String(p.name || "").toLowerCase().includes(query) ||
-        String(p.province || "").toLowerCase().includes(query)
-      );
-
-      if (filtered.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "muted";
-        empty.textContent = query
-          ? "ไม่พบสมาชิกที่ค้นหา"
-          : "ยังไม่มีสมาชิกคนอื่น";
-        list.appendChild(empty);
-        return;
-      }
-
-      filtered.forEach(profile => {
-        const btn = document.createElement("button");
-        btn.className = "member" +
-          (currentRoom === privateRoomId(profile.id) ? " active" : "");
-
-        const avatar = document.createElement("div");
-        avatar.className = "avatar";
-        avatar.textContent = String(profile.name || "?").trim().charAt(0) || "?";
-
-        const info = document.createElement("div");
-        info.className = "member-info";
-
-        const name = document.createElement("div");
-        name.className = "member-name";
-        name.textContent = profile.name || "สมาชิก";
-
-        const sub = document.createElement("div");
-        sub.className = "member-sub";
-        sub.textContent = profile.province
-          ? "จังหวัด" + profile.province
-          : "สมาชิก Patch-at";
-
-        info.append(name, sub);
-        btn.append(avatar, info);
-
-        btn.onclick = () => openPrivateChat(profile);
-        list.appendChild(btn);
+      onAuthStateChanged(auth, (user) => {
+        document.getElementById("auth").classList.toggle("hidden", !!user);
+        document.getElementById("account").classList.toggle("hidden", !user);
+        document.getElementById("who").textContent = user?.email || "";
+        if (user) status("เข้าสู่ระบบแล้ว");
+        else status("กรุณาสมัครสมาชิกหรือเข้าสู่ระบบ");
       });
+
+      document.getElementById("signup").onclick = async () => {
+        const email = value("email");
+        const password = document.getElementById("password").value;
+        if (!email || !password) return status("กรุณากรอกอีเมลและรหัสผ่าน");
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          status("สมัครสมาชิกสำเร็จ");
+        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
+      };
+
+      document.getElementById("login").onclick = async () => {
+        const email = value("email");
+        const password = document.getElementById("password").value;
+        if (!email || !password) return status("กรุณากรอกอีเมลและรหัสผ่าน");
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          status("เข้าสู่ระบบสำเร็จ");
+        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
+      };
+
+      document.getElementById("reset").onclick = async () => {
+        const email = value("email");
+        if (!email) return status("กรุณากรอกอีเมลก่อนขอรีเซ็ตรหัสผ่าน");
+        try {
+          await sendPasswordResetEmail(auth, email);
+          status("ส่งลิงก์ตั้งรหัสผ่านใหม่แล้ว กรุณาตรวจอีเมล");
+        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
+      };
+
+      document.getElementById("logout").onclick = async () => {
+        try {
+          await signOut(auth);
+          status("ออกจากระบบแล้ว");
+        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
+      };
+    } catch (e) {
+      status("ตั้งค่า Firebase ไม่สำเร็จ: " + e.message);
     }
-
-    $("searchMember").addEventListener("input", renderMembers);
-
-    function privateRoomId(otherUid) {
-      return [currentUser.uid, otherUid].sort().join("_");
-    }
-
-    async function openPrivateChat(profile) {
-      if (!currentUser || !profile || !profile.id) return;
-
-      const roomId = privateRoomId(profile.id);
-      await openRoom(roomId, profile.name || "แชทส่วนตัว", [
-        currentUser.uid, profile.id
-      ].sort());
-    }
-
-    $("groupBtn").onclick = () => openRoom("general", "กลุ่ม Patch-at");
-
-    async function openRoom(roomId, label, members = null) {
-      if (!currentUser) return;
-
-      try {
-        if (roomId !== "general") {
-          const roomRef = db.collection("rooms").doc(roomId);
-          const roomSnap = await roomRef.get();
-
-          if (!roomSnap.exists) {
-            if (!members || !members.includes(currentUser.uid)) {
-              throw new Error("ไม่สามารถเปิดห้องนี้ได้");
-            }
-
-            await roomRef.set({
-              members,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-          } else {
-            const roomData = roomSnap.data();
-            if (!Array.isArray(roomData.members) ||
-                !roomData.members.includes(currentUser.uid)) {
-              throw new Error("คุณไม่มีสิทธิ์เข้าห้องนี้");
-            }
-          }
-        }
-
-        currentRoom = roomId;
-        roomLabel = label;
-        $("roomTitle").textContent = label;
-        $("chatHint").textContent = roomId === "general"
-          ? "ข้อความในห้องกลุ่มนี้สมาชิกที่เข้าสู่ระบบสามารถอ่านได้"
-          : "แชทส่วนตัวระหว่างคุณกับ " + label;
-
-        show("sendForm", true);
-        $("messages").replaceChildren();
-
-        if (stopMessages) stopMessages();
-
-        stopMessages = db.collection("rooms")
-          .doc(roomId)
-          .collection("messages")
-          .orderBy("createdAt", "asc")
-          .limit(100)
-          .onSnapshot(snapshot => {
-            const box = $("messages");
-            box.replaceChildren();
-
-            snapshot.forEach(doc => {
-              const data = doc.data();
-              const item = document.createElement("div");
-              item.className = "msg" +
-                (data.senderId === currentUser.uid ? " mine" : "");
-
-              const who = document.createElement("div");
-              who.className = "msg-name";
-
-              if (data.senderId === currentUser.uid) {
-                who.textContent = "คุณ";
-              } else if (roomId === "general") {
-                const sender = memberProfiles.find(
-                  p => p.id === data.senderId
-                );
-                who.textContent = sender ? sender.name : "สมาชิก";
-              } else {
-                who.textContent = label;
-              }
-
-              const body = document.createElement("div");
-              body.textContent = data.text || "";
-
-              item.append(who, body);
-
-              if (data.createdAt && data.createdAt.toDate) {
-                const time = document.createElement("div");
-                time.className = "msg-time";
-                time.textContent = data.createdAt.toDate().toLocaleString(
-                  "th-TH", {
-                    day: "numeric", month: "short",
-                    hour: "2-digit", minute: "2-digit"
-                  }
-                );
-                item.appendChild(time);
-              }
-
-              box.appendChild(item);
-            });
-
-            box.scrollTop = box.scrollHeight;
-          }, e => status(errorMessage(e)));
-
-        renderMembers();
-        status("เปิดห้องแชทแล้ว");
-      } catch (e) {
-        status(errorMessage(e));
-      }
-    }
-
-    $("sendForm").onsubmit = async event => {
-      event.preventDefault();
-
-      const text = $("messageInput").value.trim();
-      if (!currentUser || !currentRoom || !text) return;
-
-      try {
-        const input = $("messageInput");
-        input.disabled = true;
-
-        await db.collection("rooms")
-          .doc(currentRoom)
-          .collection("messages")
-          .add({
-            senderId: currentUser.uid,
-            text: text,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-
-        input.value = "";
-      } catch (e) {
-        status("ส่งข้อความไม่สำเร็จ: " + errorMessage(e));
-      } finally {
-        $("messageInput").disabled = false;
-        $("messageInput").focus();
-      }
-    };
-
-    auth.onAuthStateChanged(async user => {
-      currentUser = user;
-      myProfile = null;
-
-      if (stopMessages) stopMessages();
-      if (stopMembers) stopMembers();
-      stopMessages = null;
-      stopMembers = null;
-      currentRoom = null;
-
-      show("authBox", !user);
-      show("logoutBtn", !!user);
-      show("appBox", false);
-      show("profileSetup", false);
-      show("sendForm", false);
-      $("messages").replaceChildren();
-      $("memberList").replaceChildren();
-
-      if (!user) {
-        status("กรุณาสมัครสมาชิกหรือเข้าสู่ระบบ");
-        return;
-      }
-
-      try {
-        const profileSnap = await db.collection("profiles")
-          .doc(user.uid).get();
-
-        if (!profileSnap.exists) {
-          show("profileSetup", true);
-          $("setupName").value = user.displayName || "";
-          status("กรุณากรอกข้อมูลโปรไฟล์ให้ครบ");
-          return;
-        }
-
-        myProfile = profileSnap.data();
-        renderMyProfile();
-        show("appBox", true);
-        startMembersListener();
-        status("เข้าสู่ระบบแล้ว เลือกสมาชิกเพื่อเริ่มแชท");
-      } catch (e) {
-        status("โหลดโปรไฟล์ไม่สำเร็จ: " + errorMessage(e));
-      }
-    });
   </script>
 </body>
 </html>
