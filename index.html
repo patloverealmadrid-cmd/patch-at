@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Friend Chat</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, sans-serif;
+      background: #f1f5f9; color: #172033;
+    }
+    header {
+      background: #2563eb; color: white;
+      padding: 18px; text-align: center;
+    }
+    main { max-width: 700px; margin: 20px auto; padding: 12px; }
+    section {
+      background: white; padding: 16px;
+      margin-bottom: 14px; border-radius: 14px;
+      box-shadow: 0 2px 8px #0001;
+    }
+    input, button {
+      width: 100%; padding: 12px; margin: 5px 0;
+      border-radius: 8px; font-size: 16px;
+    }
+    input { border: 1px solid #cbd5e1; }
+    button {
+      border: 0; background: #2563eb;
+      color: white; cursor: pointer;
+    }
+    button.secondary { background: #475569; }
+    #messages {
+      height: 300px; overflow-y: auto;
+      border: 1px solid #e2e8f0; padding: 10px;
+      border-radius: 8px; margin: 12px 0;
+    }
+    .msg {
+      background: #eff6ff; padding: 9px;
+      margin: 7px 0; border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+    .small { font-size: 13px; color: #64748b; }
+    .hidden { display: none; }
+    #status { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>💬 Friend Chat</h2>
+    <div>เว็บแชทสำหรับเพื่อน</div>
+  </header>
+
+  <main>
+    <section id="authBox">
+      <h3>สมัครสมาชิก / เข้าสู่ระบบ</h3>
+      <input id="email" type="email" placeholder="อีเมล">
+      <input id="password" type="password"
+             placeholder="รหัสผ่านอย่างน้อย 6 ตัว">
+      <button id="registerBtn">สมัครสมาชิก</button>
+      <button id="loginBtn" class="secondary">เข้าสู่ระบบ</button>
+    </section>
+
+    <section id="chatBox" class="hidden">
+      <div id="account"></div>
+      <p class="small">UID ของคุณ (ส่งให้เพื่อนเมื่อจะคุยส่วนตัว)</p>
+      <input id="myUid" readonly>
+      <button id="logoutBtn" class="secondary">ออกจากระบบ</button>
+    </section>
+
+    <section id="roomBox" class="hidden">
+      <h3>เลือกห้องแชท</h3>
+      <button id="groupBtn">🌍 ห้องแชทกลุ่มเพื่อน</button>
+      <p>แชทส่วนตัว: ใส่ UID ของเพื่อน</p>
+      <input id="friendUid" placeholder="UID ของเพื่อน">
+      <button id="privateBtn">เปิดแชทส่วนตัว</button>
+      <p id="roomName">ยังไม่ได้เลือกห้อง</p>
+    </section>
+
+    <section id="messageBox" class="hidden">
+      <div id="messages"></div>
+      <form id="sendForm">
+        <input id="messageInput" maxlength="2000"
+               placeholder="พิมพ์ข้อความ..." required>
+        <button type="submit">ส่งข้อความ</button>
+      </form>
+    </section>
+
+    <section>
+      <div id="status">สถานะ: รอเชื่อมต่อ</div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // นำค่าจริงจาก Firebase มาแทนค่าตัวอย่างด้านล่าง
+    const firebaseConfig = {
+    apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
+    authDomain: "patch-at.firebaseapp.com",
+    projectId: "patch-at",
+    storageBucket: "patch-at.firebasestorage.app",
+    messagingSenderId: "201035067162",
+    appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const $ = id => document.getElementById(id);
+    let currentRoom = null;
+    let unsubscribeMessages = null;
+
+    function status(message) {
+      $("status").textContent = "สถานะ: " + message;
+    }
+
+    $("registerBtn").onclick = async () => {
+      try {
+        await auth.createUserWithEmailAndPassword(
+          $("email").value.trim(), $("password").value
+        );
+        status("สมัครสมาชิกสำเร็จ");
+      } catch (e) {
+        status(e.message);
+      }
+    };
+
+    $("loginBtn").onclick = async () => {
+      try {
+        await auth.signInWithEmailAndPassword(
+          $("email").value.trim(), $("password").value
+        );
+        status("เข้าสู่ระบบสำเร็จ");
+      } catch (e) {
+        status(e.message);
+      }
+    };
+
+    $("logoutBtn").onclick = () => auth.signOut();
+
+    auth.onAuthStateChanged(user => {
+      $("authBox").classList.toggle("hidden", !!user);
+      $("chatBox").classList.toggle("hidden", !user);
+      $("roomBox").classList.toggle("hidden", !user);
+
+      if (!user) {
+        $("messageBox").classList.add("hidden");
+        if (unsubscribeMessages) unsubscribeMessages();
+        unsubscribeMessages = null;
+        currentRoom = null;
+        status("ออกจากระบบแล้ว");
+        return;
+      }
+
+      $("account").textContent = "บัญชี: " + user.email;
+      $("myUid").value = user.uid;
+      status("เข้าสู่ระบบแล้ว เลือกห้องแชทได้เลย");
+    });
+
+    async function openRoom(roomId, label) {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        if (roomId !== "general") {
+          const roomRef = db.collection("rooms").doc(roomId);
+          const roomSnap = await roomRef.get();
+
+          if (!roomSnap.exists) {
+            const ids = roomId.split("_");
+            if (!ids.includes(user.uid)) {
+              throw new Error("ห้องนี้ไม่ใช่ห้องของคุณ");
+            }
+            await roomRef.set({
+              members: ids,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          } else if (!roomSnap.data().members.includes(user.uid)) {
+            throw new Error("คุณไม่มีสิทธิ์เข้าห้องนี้");
+          }
+        }
+
+        currentRoom = roomId;
+        $("roomName").textContent = "ห้อง: " + label;
+        $("messageBox").classList.remove("hidden");
+        $("messages").replaceChildren();
+
+        if (unsubscribeMessages) unsubscribeMessages();
+
+        unsubscribeMessages = db.collection("rooms")
+          .doc(roomId).collection("messages")
+          .orderBy("createdAt")
+          .limit(100)
+          .onSnapshot(snapshot => {
+            $("messages").replaceChildren();
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              const item = document.createElement("div");
+              item.className = "msg";
+
+              const who = document.createElement("strong");
+              who.textContent = data.senderId === user.uid
+                ? "คุณ" : "เพื่อน";
+
+              const body = document.createElement("div");
+              body.textContent = data.text || "";
+
+              item.append(who, body);
+              $("messages").appendChild(item);
+            });
+            $("messages").scrollTop = $("messages").scrollHeight;
+          }, e => status(e.message));
+
+        status("เปิดห้องแล้ว");
+      } catch (e) {
+        status(e.message);
+      }
+    }
+
+    $("groupBtn").onclick = () => openRoom("general", "กลุ่มเพื่อน");
+
+    $("privateBtn").onclick = () => {
+      const friendId = $("friendUid").value.trim();
+      const user = auth.currentUser;
+
+      if (!friendId || !user) {
+        status("กรุณาใส่ UID ของเพื่อน");
+        return;
+      }
+      if (friendId === user.uid) {
+        status("กรุณาใส่ UID ของเพื่อน ไม่ใช่ UID ของคุณ");
+        return;
+      }
+
+      const roomId = [user.uid, friendId].sort().join("_");
+      openRoom(roomId, "แชทส่วนตัว");
+    };
+
+    $("sendForm").onsubmit = async event => {
+      event.preventDefault();
+      const user = auth.currentUser;
+      const text = $("messageInput").value.trim();
+
+      if (!user || !currentRoom || !text) return;
+
+      try {
+        await db.collection("rooms").doc(currentRoom)
+          .collection("messages").add({
+            senderId: user.uid,
+            text: text,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        $("messageInput").value = "";
+      } catch (e) {
+        status("ส่งข้อความไม่สำเร็จ: " + e.message);
+      }
+    };
+  </script>
+</body>
+</html>
