@@ -126,8 +126,9 @@
         );
         status("สมัครสมาชิกสำเร็จ");
       } catch (e) {
-        status(e.message);
-      }
+  status("รหัสข้อผิดพลาด: " + e.code +
+         "\nรายละเอียด: " + e.message);
+}
     };
 
     $("loginBtn").onclick = async () => {
