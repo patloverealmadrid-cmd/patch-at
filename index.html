@@ -727,6 +727,19 @@ function getInitial(name) {
 
 }
 
+  function formatThaiTime(timestamp) {
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return "กำลังบันทึกเวลา...";
+  }
+
+  return new Intl.DateTimeFormat("th-TH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Bangkok"
+  }).format(timestamp.toDate()) + " น.";
+}
+
 
 /* ==========================================
    THAI PROVINCES
@@ -1435,95 +1448,82 @@ async function openPrivateChat(
    REALTIME MESSAGES
    ========================================== */
 
+
 function listenMessages() {
 
   if (unsubscribeMessages) {
-
     unsubscribeMessages();
-
   }
-
 
   $("messages").replaceChildren();
 
+  const roomId = currentRoom;
 
   unsubscribeMessages =
     db.collection("rooms")
-      .doc(currentRoom)
+      .doc(roomId)
       .collection("messages")
       .orderBy("createdAt")
       .limit(100)
       .onSnapshot(snapshot => {
 
-        $("messages")
-          .replaceChildren();
+        if (currentRoom !== roomId) return;
 
+        $("messages").replaceChildren();
 
         snapshot.forEach(doc => {
 
-          const data =
-            doc.data();
-
+          const data = doc.data();
 
           const message =
             document.createElement("div");
 
+          message.className = "message";
 
-          message.className =
-            "message";
+          const isMine =
+            data.senderId === currentUser.uid;
 
-
-          if (
-            data.senderId ===
-            currentUser.uid
-          ) {
-
+          if (isMine) {
             message.classList.add("me");
-
           }
-
 
           const name =
             document.createElement("div");
 
-          name.className =
-            "message-name";
+          name.className = "message-name";
 
-
-          name.textContent =
-            data.senderId ===
-            currentUser.uid
-              ? "คุณ"
-              : currentFriend?.name || "เพื่อน";
-
+          name.textContent = isMine
+            ? "คุณ"
+            : currentFriend?.name || "เพื่อน";
 
           const text =
             document.createElement("div");
 
+          text.textContent = data.text || "";
 
-          text.textContent =
-            data.text || "";
+          const time =
+            document.createElement("div");
 
+          time.className = "message-time";
 
-          message.append(
-            name,
-            text
-          );
+          time.textContent =
+            formatThaiTime(data.createdAt);
 
+          message.append(name, text, time);
 
-          $("messages")
-            .appendChild(message);
+          $("messages").appendChild(message);
 
         });
-
 
         $("messages").scrollTop =
           $("messages").scrollHeight;
 
-
       }, error => {
 
-        console.error(error);
+        console.error(
+          "โหลดข้อความไม่สำเร็จ",
+          error
+        );
 
       });
 
@@ -1539,23 +1539,16 @@ $("sendForm").onsubmit =
 
     event.preventDefault();
 
-
     const text =
-      $("messageInput")
-        .value
-        .trim();
-
+      $("messageInput").value.trim();
 
     if (
       !currentUser ||
       !currentRoom ||
       !text
     ) {
-
       return;
-
     }
-
 
     try {
 
@@ -1565,8 +1558,7 @@ $("sendForm").onsubmit =
         .collection("messages")
         .add({
 
-          senderId:
-            currentUser.uid,
+          senderId: currentUser.uid,
 
           text,
 
@@ -1576,10 +1568,7 @@ $("sendForm").onsubmit =
 
         });
 
-
-      $("messageInput")
-        .value = "";
-
+      $("messageInput").value = "";
 
     } catch (error) {
 
@@ -1611,13 +1600,9 @@ $("changePasswordBtn").onclick =
     $("settingsMenu")
       .classList.add("hidden");
 
-
     if (!currentUser?.email) {
-
       return;
-
     }
-
 
     try {
 
@@ -1625,11 +1610,9 @@ $("changePasswordBtn").onclick =
         currentUser.email
       );
 
-
       alert(
         "ส่งลิงก์เปลี่ยนรหัสผ่านไปยังอีเมลของคุณแล้ว"
       );
-
 
     } catch (error) {
 
@@ -1654,3 +1637,5 @@ $("logoutBtn").onclick =
 
 </body>
 </html>
+
+  
