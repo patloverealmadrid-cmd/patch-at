@@ -4,91 +4,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Friend Chat</title>
+  <title>แชทกลุ่มเพื่อน</title>
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: #f1f5f9; color: #172033;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      color: #172033;
     }
-    header {
-      background: #2563eb; color: white;
-      padding: 18px; text-align: center;
+    .container {
+      max-width: 700px;
+      margin: 25px auto;
+      padding: 16px;
     }
-    main { max-width: 700px; margin: 20px auto; padding: 12px; }
-    section {
-      background: white; padding: 16px;
-      margin-bottom: 14px; border-radius: 14px;
-      box-shadow: 0 2px 8px #0001;
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 14px #00000012;
     }
+    h1, h2 { margin-top: 0; }
     input, button {
-      width: 100%; padding: 12px; margin: 5px 0;
-      border-radius: 8px; font-size: 16px;
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      border-radius: 9px;
+      font-size: 16px;
     }
-    input { border: 1px solid #cbd5e1; }
+    input {
+      border: 1px solid #ccd3df;
+    }
     button {
-      border: 0; background: #2563eb;
-      color: white; cursor: pointer;
+      border: 0;
+      background: #246bfd;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
     }
-    button.secondary { background: #475569; }
+    button.secondary { background: #526174; }
+    button:disabled { opacity: .5; }
+    .hidden { display: none; }
+    #status {
+      white-space: pre-wrap;
+      color: #b42318;
+      margin: 10px 0;
+    }
     #messages {
-      height: 300px; overflow-y: auto;
-      border: 1px solid #e2e8f0; padding: 10px;
-      border-radius: 8px; margin: 12px 0;
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #e1e6ef;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 12px 0;
+      background: #f8fafc;
     }
     .msg {
-      background: #eff6ff; padding: 9px;
-      margin: 7px 0; border-radius: 8px;
+      background: white;
+      border: 1px solid #e5eaf2;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 8px 0;
       overflow-wrap: anywhere;
     }
-    .small { font-size: 13px; color: #64748b; }
-    .hidden { display: none; }
-    #status { white-space: pre-wrap; }
+    .small {
+      font-size: 13px;
+      color: #596579;
+      overflow-wrap: anywhere;
+    }
+    .row { display: flex; gap: 8px; }
+    .row button { flex: 1; }
   </style>
 </head>
 <body>
-  <header>
-    <h2>💬 Friend Chat</h2>
-    <div>เว็บแชทสำหรับเพื่อน</div>
-  </header>
+  <main class="container">
+    <section class="card">
+      <h1>💬 แชทกลุ่มเพื่อน</h1>
+      <p>สมัครสมาชิกเพื่อเริ่มพูดคุยกับเพื่อน</p>
 
-  <main>
-    <section id="authBox">
-      <h3>สมัครสมาชิก / เข้าสู่ระบบ</h3>
-      <input id="email" type="email" placeholder="อีเมล">
-      <input id="password" type="password"
-             placeholder="รหัสผ่านอย่างน้อย 6 ตัว">
-      <button id="registerBtn">สมัครสมาชิก</button>
-      <button id="loginBtn" class="secondary">เข้าสู่ระบบ</button>
+      <div id="authPanel">
+        <input id="email" type="email" placeholder="อีเมล" autocomplete="email">
+        <input id="password" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัว" autocomplete="current-password">
+        <div class="row">
+          <button id="registerBtn">สมัครสมาชิก</button>
+          <button id="loginBtn" class="secondary">เข้าสู่ระบบ</button>
+        </div>
+      </div>
+
+      <div id="userPanel" class="hidden">
+        <p>เข้าสู่ระบบแล้ว</p>
+        <p class="small">UID ของคุณ (ส่งให้เพื่อนเพื่อเริ่มแชทส่วนตัว):</p>
+        <p id="myUid" class="small"></p>
+        <button id="copyUidBtn" class="secondary">คัดลอก UID ของฉัน</button>
+        <button id="logoutBtn" class="secondary">ออกจากระบบ</button>
+      </div>
+      <div id="status"></div>
     </section>
 
-    <section id="chatBox" class="hidden">
-      <div id="account"></div>
-      <p class="small">UID ของคุณ (ส่งให้เพื่อนเมื่อจะคุยส่วนตัว)</p>
-      <input id="myUid" readonly>
-      <button id="logoutBtn" class="secondary">ออกจากระบบ</button>
-    </section>
+    <section id="chatPanel" class="card hidden">
+      <h2>เลือกห้องแชท</h2>
+      <button id="groupBtn">👥 ห้องกลุ่มเพื่อน</button>
 
-    <section id="roomBox" class="hidden">
-      <h3>เลือกห้องแชท</h3>
-      <button id="groupBtn">🌍 ห้องแชทกลุ่มเพื่อน</button>
-      <p>แชทส่วนตัว: ใส่ UID ของเพื่อน</p>
+      <h3>แชทส่วนตัว</h3>
+      <p class="small">ใส่ UID ของเพื่อนที่ต้องการคุยด้วย</p>
       <input id="friendUid" placeholder="UID ของเพื่อน">
       <button id="privateBtn">เปิดแชทส่วนตัว</button>
-      <p id="roomName">ยังไม่ได้เลือกห้อง</p>
-    </section>
 
-    <section id="messageBox" class="hidden">
+      <hr>
+      <h3 id="roomName">ยังไม่ได้เลือกห้อง</h3>
       <div id="messages"></div>
       <form id="sendForm">
         <input id="messageInput" maxlength="2000"
-               placeholder="พิมพ์ข้อความ..." required>
-        <button type="submit">ส่งข้อความ</button>
+          placeholder="พิมพ์ข้อความ..." autocomplete="off">
+        <button id="sendBtn" type="submit">ส่งข้อความ</button>
       </form>
-    </section>
-
-    <section>
-      <div id="status">สถานะ: รอเชื่อมต่อ</div>
+      <p class="small">อย่าส่งรหัสผ่านหรือข้อมูลส่วนตัวที่สำคัญในห้องแชท</p>
     </section>
   </main>
 
@@ -97,15 +128,15 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // นำค่าจริงจาก Firebase มาแทนค่าตัวอย่างด้านล่าง
+    // วางค่าจาก Firebase Web App ของพี่แพ็ทไว้ตรงนี้
     const firebaseConfig = {
-    apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
-    authDomain: "patch-at.firebaseapp.com",
-    projectId: "patch-at",
-    storageBucket: "patch-at.firebasestorage.app",
-    messagingSenderId: "201035067162",
-    appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
-  };
+  apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
+  authDomain: "patch-at.firebaseapp.com",
+  projectId: "patch-at",
+  storageBucket: "patch-at.firebasestorage.app",
+  messagingSenderId: "201035067162",
+  appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
+};
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -113,53 +144,70 @@
 
     const $ = id => document.getElementById(id);
     let currentRoom = null;
+    let currentRoomLabel = "";
     let unsubscribeMessages = null;
 
     function status(message) {
-      $("status").textContent = "สถานะ: " + message;
+      $("status").textContent = message || "";
     }
 
-    $("registerBtn").onclick = async () => {
-      try {
-        await auth.createUserWithEmailAndPassword(
-          $("email").value.trim(), $("password").value
-        );
-        status("สมัครสมาชิกสำเร็จ");
-      } catch (e) {
-        status(e.message);
-      }
-    };
-
-    $("loginBtn").onclick = async () => {
-      try {
-        await auth.signInWithEmailAndPassword(
-          $("email").value.trim(), $("password").value
-        );
-        status("เข้าสู่ระบบสำเร็จ");
-      } catch (e) {
-        status(e.message);
-      }
-    };
-
-    $("logoutBtn").onclick = () => auth.signOut();
-
-    auth.onAuthStateChanged(user => {
-      $("authBox").classList.toggle("hidden", !!user);
-      $("chatBox").classList.toggle("hidden", !user);
-      $("roomBox").classList.toggle("hidden", !user);
-
+    function showLoggedIn(user) {
+      $("authPanel").classList.toggle("hidden", !!user);
+      $("userPanel").classList.toggle("hidden", !user);
+      $("chatPanel").classList.toggle("hidden", !user);
+      $("myUid").textContent = user ? user.uid : "";
       if (!user) {
-        $("messageBox").classList.add("hidden");
+        currentRoom = null;
+        currentRoomLabel = "";
+        $("roomName").textContent = "ยังไม่ได้เลือกห้อง";
+        $("messages").replaceChildren();
         if (unsubscribeMessages) unsubscribeMessages();
         unsubscribeMessages = null;
-        currentRoom = null;
-        status("ออกจากระบบแล้ว");
+      }
+    }
+
+    $("registerBtn").addEventListener("click", async () => {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if (!email || password.length < 6) {
+        status("กรุณาใส่อีเมลและรหัสผ่านอย่างน้อย 6 ตัว");
         return;
       }
+      try {
+        await auth.createUserWithEmailAndPassword(email, password);
+        status("สมัครสมาชิกสำเร็จ");
+      } catch (e) {
+        status("สมัครไม่สำเร็จ: " + e.message);
+      }
+    });
 
-      $("account").textContent = "บัญชี: " + user.email;
-      $("myUid").value = user.uid;
-      status("เข้าสู่ระบบแล้ว เลือกห้องแชทได้เลย");
+    $("loginBtn").addEventListener("click", async () => {
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        status("เข้าสู่ระบบสำเร็จ");
+      } catch (e) {
+        status("เข้าสู่ระบบไม่สำเร็จ: " + e.message);
+      }
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      try {
+        await auth.signOut();
+        status("ออกจากระบบแล้ว");
+      } catch (e) {
+        status("ออกจากระบบไม่สำเร็จ: " + e.message);
+      }
+    });
+
+    $("copyUidBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(auth.currentUser.uid);
+        status("คัดลอก UID แล้ว ส่งให้เพื่อนได้เลย");
+      } catch (e) {
+        status("คัดลอกอัตโนมัติไม่ได้ กรุณาเลือกและคัดลอก UID ด้วยตนเอง");
+      }
     });
 
     async function openRoom(roomId, label) {
@@ -168,26 +216,30 @@
 
       try {
         if (roomId !== "general") {
+          const ids = roomId.split("_");
+          if (ids.length !== 2 || !ids.includes(user.uid)) {
+            throw new Error("ห้องนี้ไม่ใช่ห้องส่วนตัวของคุณ");
+          }
+
           const roomRef = db.collection("rooms").doc(roomId);
           const roomSnap = await roomRef.get();
 
           if (!roomSnap.exists) {
-            const ids = roomId.split("_");
-            if (!ids.includes(user.uid)) {
-              throw new Error("ห้องนี้ไม่ใช่ห้องของคุณ");
-            }
             await roomRef.set({
               members: ids,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-          } else if (!roomSnap.data().members.includes(user.uid)) {
+          } else if (
+            !Array.isArray(roomSnap.data().members) ||
+            !roomSnap.data().members.includes(user.uid)
+          ) {
             throw new Error("คุณไม่มีสิทธิ์เข้าห้องนี้");
           }
         }
 
         currentRoom = roomId;
+        currentRoomLabel = label;
         $("roomName").textContent = "ห้อง: " + label;
-        $("messageBox").classList.remove("hidden");
         $("messages").replaceChildren();
 
         if (unsubscribeMessages) unsubscribeMessages();
@@ -198,6 +250,7 @@
           .limit(100)
           .onSnapshot(snapshot => {
             $("messages").replaceChildren();
+
             snapshot.forEach(doc => {
               const data = doc.data();
               const item = document.createElement("div");
@@ -205,61 +258,80 @@
 
               const who = document.createElement("strong");
               who.textContent = data.senderId === user.uid
-                ? "คุณ" : "เพื่อน";
+                ? "คุณ"
+                : "เพื่อน";
 
               const body = document.createElement("div");
               body.textContent = data.text || "";
 
-              item.append(who, body);
+              const time = document.createElement("div");
+              time.className = "small";
+              time.textContent = data.createdAt &&
+                data.createdAt.toDate
+                ? data.createdAt.toDate().toLocaleString("th-TH")
+                : "กำลังส่ง...";
+
+              item.append(who, body, time);
               $("messages").appendChild(item);
             });
-            $("messages").scrollTop = $("messages").scrollHeight;
-          }, e => status(e.message));
 
-        status("เปิดห้องแล้ว");
+            $("messages").scrollTop = $("messages").scrollHeight;
+          }, e => status("อ่านข้อความไม่ได้: " + e.message));
+
+        status("เปิดห้องแชทแล้ว");
       } catch (e) {
-        status(e.message);
+        status("เปิดห้องไม่ได้: " + e.message);
       }
     }
 
-    $("groupBtn").onclick = () => openRoom("general", "กลุ่มเพื่อน");
+    $("groupBtn").addEventListener("click", () => {
+      openRoom("general", "กลุ่มเพื่อน");
+    });
 
-    $("privateBtn").onclick = () => {
-      const friendId = $("friendUid").value.trim();
+    $("privateBtn").addEventListener("click", () => {
       const user = auth.currentUser;
+      const friendUid = $("friendUid").value.trim();
 
-      if (!friendId || !user) {
-        status("กรุณาใส่ UID ของเพื่อน");
-        return;
-      }
-      if (friendId === user.uid) {
-        status("กรุณาใส่ UID ของเพื่อน ไม่ใช่ UID ของคุณ");
-        return;
-      }
+      if (!user) return status("กรุณาเข้าสู่ระบบก่อน");
+      if (!friendUid) return status("กรุณาใส่ UID ของเพื่อน");
+      if (friendUid === user.uid) return status("นี่คือ UID ของคุณเอง");
 
-      const roomId = [user.uid, friendId].sort().join("_");
+      const roomId = [user.uid, friendUid].sort().join("_");
       openRoom(roomId, "แชทส่วนตัว");
-    };
+    });
 
-    $("sendForm").onsubmit = async event => {
+    $("sendForm").addEventListener("submit", async event => {
       event.preventDefault();
+
       const user = auth.currentUser;
-      const text = $("messageInput").value.trim();
+      const message = $("messageInput").value.trim();
 
-      if (!user || !currentRoom || !text) return;
+      if (!user) return status("กรุณาเข้าสู่ระบบก่อน");
+      if (!currentRoom) return status("กรุณาเลือกห้องแชทก่อน");
+      if (!message) return;
 
+      $("sendBtn").disabled = true;
       try {
         await db.collection("rooms").doc(currentRoom)
           .collection("messages").add({
             senderId: user.uid,
-            text: text,
+            text: message,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
+
         $("messageInput").value = "";
+        status("ส่งข้อความแล้ว");
       } catch (e) {
-        status("ส่งข้อความไม่สำเร็จ: " + e.message);
+        status("ส่งข้อความไม่ได้: " + e.message);
+      } finally {
+        $("sendBtn").disabled = false;
       }
-    };
+    });
+
+    auth.onAuthStateChanged(user => {
+      showLoggedIn(user);
+      if (user) status("พร้อมใช้งาน เลือกห้องแชทได้เลย");
+    });
   </script>
 </body>
 </html>
