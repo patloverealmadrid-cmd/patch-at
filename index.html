@@ -1,129 +1,1656 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patch-at | ห้องแชท</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: #f1f5f9; color: #172033;
-    }
-    .wrap { max-width: 480px; margin: 40px auto; padding: 16px; }
-    .card {
-      background: white; border-radius: 18px; padding: 24px;
-      box-shadow: 0 5px 24px #00000012;
-    }
-    h1 { text-align: center; color: #2563eb; }
-    input, button {
-      width: 100%; padding: 12px; margin: 7px 0;
-      border-radius: 9px; font-size: 16px;
-    }
-    input { border: 1px solid #cbd5e1; }
-    button { border: 0; background: #2563eb; color: white; cursor: pointer; }
-    button.secondary { background: #e2e8f0; color: #172033; }
-    #status { overflow-wrap: anywhere; font-size: 14px; }
-    .hidden { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patch-at</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #172033;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* LOGIN */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 5px 25px #0002;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.logo h1 {
+  margin: 0;
+  color: #2563eb;
+}
+
+.logo p {
+  color: #64748b;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin: 6px 0;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  margin: 6px 0;
+}
+
+button.secondary {
+  background: #e2e8f0;
+  color: #172033;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+button.small-btn {
+  width: auto;
+  padding: 8px 12px;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* APP */
+
+.app {
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 65px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.my-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.profile-text strong {
+  display: block;
+}
+
+.profile-text span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.gear {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  background: #f1f5f9;
+  color: #172033;
+  font-size: 21px;
+}
+
+.layout {
+  max-width: 1100px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: calc(100vh - 65px);
+}
+
+.sidebar {
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  padding: 15px;
+}
+
+.sidebar h3 {
+  margin-top: 5px;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.member:hover {
+  background: #f1f5f9;
+}
+
+.member-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.member-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.member-info strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-info span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.offline-dot {
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+}
+
+/* CHAT */
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-header {
+  background: white;
+  padding: 15px 18px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-header strong {
+  display: block;
+}
+
+.chat-header span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.messages {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  min-height: 400px;
+}
+
+.message {
+  max-width: 75%;
+  margin: 8px 0;
+  padding: 10px 13px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 1px 4px #0001;
+  overflow-wrap: anywhere;
+}
+
+.message.me {
+  margin-left: auto;
+  background: #2563eb;
+  color: white;
+}
+
+.message-name {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.message-time {
+  font-size: 10px;
+  opacity: .65;
+  margin-top: 4px;
+}
+
+.send-area {
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.send-area input {
+  margin: 0;
+}
+
+.send-area button {
+  width: 90px;
+  margin: 0;
+}
+
+/* SETTINGS */
+
+.settings {
+  position: fixed;
+  top: 65px;
+  right: 15px;
+  width: 280px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px #0003;
+  padding: 15px;
+  z-index: 20;
+}
+
+.settings button {
+  text-align: left;
+}
+
+/* PROFILE */
+
+.profile-card {
+  max-width: 600px;
+  margin: 30px auto;
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px #0001;
+}
+
+.back-btn {
+  background: #e2e8f0;
+  color: #172033;
+}
+
+@media (max-width: 700px) {
+
+  .layout {
+    display: block;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .message {
+    max-width: 88%;
+  }
+}
+</style>
 </head>
+
 <body>
-  <main class="wrap">
-    <section class="card">
-      <h1>Patch-at</h1>
-      <p style="text-align:center">ห้องแชทของคุณ</p>
 
-      <div id="auth">
-        <input id="email" type="email" placeholder="อีเมล" autocomplete="email">
-        <input id="password" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัว" autocomplete="current-password">
-        <button id="signup">สมัครสมาชิก</button>
-        <button id="login">เข้าสู่ระบบ</button>
-        <button id="reset" class="secondary">ลืมรหัสผ่าน</button>
+<!-- LOGIN -->
+
+<div id="authPage" class="auth-page">
+
+  <div class="auth-card">
+
+    <div class="logo">
+      <h1>💬 Patch-at</h1>
+      <p>แชทกับเพื่อนของคุณ</p>
+    </div>
+
+    <div id="loginForm">
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="อีเมล"
+        autocomplete="email"
+      >
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="รหัสผ่าน"
+        autocomplete="current-password"
+      >
+
+      <button id="loginBtn">
+        เข้าสู่ระบบ
+      </button>
+
+      <button id="showRegisterBtn" class="secondary">
+        สมัครสมาชิก
+      </button>
+
+      <button id="forgotBtn" class="secondary">
+        ลืมรหัสผ่าน
+      </button>
+
+    </div>
+
+    <div id="registerForm" class="hidden">
+
+      <h3>สมัครสมาชิก</h3>
+
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="อีเมล"
+      >
+
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="รหัสผ่านอย่างน้อย 6 ตัว"
+      >
+
+      <button id="registerBtn">
+        สมัครสมาชิก
+      </button>
+
+      <button id="backLoginBtn" class="secondary">
+        กลับเข้าสู่ระบบ
+      </button>
+
+    </div>
+
+    <div id="authStatus" class="status">
+      พร้อมใช้งาน
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- MAIN APP -->
+
+<div id="app" class="app hidden">
+
+  <header class="topbar">
+
+    <div class="my-profile">
+
+      <div id="myAvatar" class="avatar">
+        ?
       </div>
 
-      <div id="account" class="hidden">
-        <p>เข้าสู่ระบบแล้ว: <strong id="who"></strong></p>
-        <button id="logout" class="secondary">ออกจากระบบ</button>
+      <div class="profile-text">
+        <strong id="myName">
+          สมาชิก
+        </strong>
+
+        <span>
+          ออนไลน์
+        </span>
       </div>
-      <p id="status" role="status">กำลังเตรียมระบบ...</p>
-    </section>
-  </main>
 
-  <script type="module">
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-      sendPasswordResetEmail, onAuthStateChanged, signOut,
-      setPersistence, browserLocalPersistence
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      <button
+        id="gearBtn"
+        class="gear"
+        title="ตั้งค่า"
+      >
+        ⚙️
+      </button>
 
-    // นำค่า Config จริงจาก Firebase มาใส่ในส่วนนี้
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
-      authDomain: "patch-at.firebaseapp.com",
-      projectId: "patch-at",
-      appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
+    </div>
+
+  </header>
+
+
+  <!-- SETTINGS -->
+
+  <div id="settingsMenu" class="settings hidden">
+
+    <button id="editProfileBtn">
+      👤 บัญชีผู้ใช้
+    </button>
+
+    <button id="changePasswordBtn">
+      🔐 ตั้งค่าบัญชีผู้ใช้
+    </button>
+
+    <button id="logoutBtn" class="danger">
+      🚪 ออกจากระบบ
+    </button>
+
+  </div>
+
+
+  <div class="layout">
+
+    <!-- MEMBER LIST -->
+
+    <aside class="sidebar">
+
+      <h3>
+        👥 สมาชิก
+      </h3>
+
+      <input
+        id="searchMember"
+        placeholder="ค้นหาสมาชิก..."
+      >
+
+      <div id="memberList">
+        กำลังโหลดสมาชิก...
+      </div>
+
+    </aside>
+
+
+    <!-- CHAT -->
+
+    <main class="chat">
+
+      <div class="chat-header">
+
+        <strong id="chatTitle">
+          Patch-at
+        </strong>
+
+        <span id="chatSubtitle">
+          เลือกสมาชิกเพื่อเริ่มแชท
+        </span>
+
+      </div>
+
+      <div
+        id="messages"
+        class="messages"
+      >
+
+        <div style="text-align:center;color:#64748b">
+          เลือกสมาชิกทางด้านซ้ายเพื่อเริ่มสนทนา
+        </div>
+
+      </div>
+
+      <form
+        id="sendForm"
+        class="send-area"
+      >
+
+        <input
+          id="messageInput"
+          placeholder="พิมพ์ข้อความ..."
+          maxlength="2000"
+          disabled
+        >
+
+        <button
+          id="sendBtn"
+          type="submit"
+          disabled
+        >
+          ส่ง
+        </button>
+
+      </form>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<!-- PROFILE PAGE -->
+
+<div id="profilePage" class="hidden">
+
+  <div class="profile-card">
+
+    <h2>
+      👤 บัญชีผู้ใช้
+    </h2>
+
+    <input
+      id="profileName"
+      placeholder="ชื่อ"
+      maxlength="40"
+    >
+
+    <input
+      id="profileAge"
+      type="number"
+      min="1"
+      max="120"
+      placeholder="อายุ"
+    >
+
+    <select id="profileGender">
+
+      <option value="">
+        เลือกเพศ
+      </option>
+
+      <option value="ชาย">
+        ชาย
+      </option>
+
+      <option value="หญิง">
+        หญิง
+      </option>
+
+      <option value="ไม่ระบุ">
+        ไม่ระบุ
+      </option>
+
+    </select>
+
+    <select id="profileProvince">
+
+      <option value="">
+        เลือกจังหวัด
+      </option>
+
+    </select>
+
+    <button id="saveProfileBtn">
+      บันทึกข้อมูล
+    </button>
+
+    <button
+      id="backAppBtn"
+      class="back-btn"
+    >
+      กลับหน้าแชท
+    </button>
+
+    <div
+      id="profileStatus"
+      class="status"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
+<script>
+
+/* ==========================================
+   FIREBASE CONFIG
+   ========================================== */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAdEhQTgHQtCaat5dPKBAizgNYpoxm4dco",
+  authDomain: "patch-at.firebaseapp.com",
+  projectId: "patch-at",
+  storageBucket: "patch-at.firebasestorage.app",
+  messagingSenderId: "201035067162",
+  appId: "1:201035067162:web:021d18b8f574bcbe8cc6a3"
+};
+
+
+/* ==========================================
+   START FIREBASE
+   ========================================== */
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+const db = firebase.firestore();
+
+
+/* ==========================================
+   VARIABLES
+   ========================================== */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let currentFriend = null;
+
+let currentRoom = null;
+
+let unsubscribeMessages = null;
+
+let unsubscribeMembers = null;
+
+
+/* ==========================================
+   HELPERS
+   ========================================== */
+
+function $(id) {
+
+  return document.getElementById(id);
+
+}
+
+
+function showStatus(message) {
+
+  $("authStatus").textContent = message;
+
+}
+
+
+function getInitial(name) {
+
+  if (!name) return "?";
+
+  return name.trim().charAt(0).toUpperCase();
+
+}
+
+
+/* ==========================================
+   THAI PROVINCES
+   ========================================== */
+
+const provinces = [
+
+"กรุงเทพมหานคร",
+"กระบี่",
+"กาญจนบุรี",
+"กาฬสินธุ์",
+"กำแพงเพชร",
+"ขอนแก่น",
+"จันทบุรี",
+"ฉะเชิงเทรา",
+"ชลบุรี",
+"ชัยนาท",
+"ชัยภูมิ",
+"ชุมพร",
+"ตรัง",
+"ตราด",
+"ตาก",
+"นครนายก",
+"นครปฐม",
+"นครพนม",
+"นครราชสีมา",
+"นครศรีธรรมราช",
+"นครสวรรค์",
+"นนทบุรี",
+"นราธิวาส",
+"น่าน",
+"บึงกาฬ",
+"บุรีรัมย์",
+"ปทุมธานี",
+"ประจวบคีรีขันธ์",
+"ปราจีนบุรี",
+"ปัตตานี",
+"พะเยา",
+"พังงา",
+"พัทลุง",
+"พิจิตร",
+"พิษณุโลก",
+"ภูเก็ต",
+"มหาสารคาม",
+"มุกดาหาร",
+"ยะลา",
+"ยโสธร",
+"ร้อยเอ็ด",
+"ระนอง",
+"ระยอง",
+"ราชบุรี",
+"ลพบุรี",
+"ลำปาง",
+"ลำพูน",
+"ศรีสะเกษ",
+"สกลนคร",
+"สงขลา",
+"สตูล",
+"สมุทรปราการ",
+"สมุทรสงคราม",
+"สมุทรสาคร",
+"สระแก้ว",
+"สระบุรี",
+"สิงห์บุรี",
+"สุพรรณบุรี",
+"สุราษฎร์ธานี",
+"สุรินทร์",
+"สุโขทัย",
+"หนองคาย",
+"หนองบัวลำภู",
+"อำนาจเจริญ",
+"อุดรธานี",
+"อุตรดิตถ์",
+"อุทัยธานี",
+"อุบลราชธานี",
+"อ่างทอง",
+"เชียงราย",
+"เชียงใหม่",
+"เพชรบุรี",
+"เพชรบูรณ์",
+"เลย",
+"แพร่",
+"แม่ฮ่องสอน"
+];
+
+
+provinces.forEach(province => {
+
+  const option = document.createElement("option");
+
+  option.value = province;
+
+  option.textContent = province;
+
+  $("profileProvince").appendChild(option);
+
+});
+
+
+/* ==========================================
+   AUTH
+   ========================================== */
+
+$("showRegisterBtn").onclick = () => {
+
+  $("loginForm").classList.add("hidden");
+
+  $("registerForm").classList.remove("hidden");
+
+};
+
+
+$("backLoginBtn").onclick = () => {
+
+  $("registerForm").classList.add("hidden");
+
+  $("loginForm").classList.remove("hidden");
+
+};
+
+
+$("registerBtn").onclick = async () => {
+
+  const email = $("registerEmail").value.trim();
+
+  const password = $("registerPassword").value;
+
+  if (!email) {
+
+    showStatus("กรุณากรอกอีเมล");
+
+    return;
+
+  }
+
+  if (password.length < 6) {
+
+    showStatus("รหัสผ่านต้องมีอย่างน้อย 6 ตัว");
+
+    return;
+
+  }
+
+  try {
+
+    await auth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
+
+    showStatus("สมัครสมาชิกสำเร็จ");
+
+  } catch (error) {
+
+    showStatus(
+      "สมัครสมาชิกไม่สำเร็จ: " +
+      error.message
+    );
+
+  }
+
+};
+
+
+$("loginBtn").onclick = async () => {
+
+  const email = $("loginEmail").value.trim();
+
+  const password = $("loginPassword").value;
+
+  if (!email || !password) {
+
+    showStatus("กรุณากรอกอีเมลและรหัสผ่าน");
+
+    return;
+
+  }
+
+  try {
+
+    await auth.signInWithEmailAndPassword(
+      email,
+      password
+    );
+
+  } catch (error) {
+
+    showStatus(
+      "เข้าสู่ระบบไม่สำเร็จ: " +
+      error.message
+    );
+
+  }
+
+};
+
+
+$("forgotBtn").onclick = async () => {
+
+  const email = $("loginEmail").value.trim();
+
+  if (!email) {
+
+    showStatus(
+      "กรุณากรอกอีเมลก่อนกดลืมรหัสผ่าน"
+    );
+
+    return;
+
+  }
+
+  try {
+
+    await auth.sendPasswordResetEmail(email);
+
+    showStatus(
+      "ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลแล้ว"
+    );
+
+  } catch (error) {
+
+    showStatus(
+      "ส่งลิงก์ไม่สำเร็จ: " +
+      error.message
+    );
+
+  }
+
+};
+
+
+/* ==========================================
+   AUTH STATE
+   ========================================== */
+
+auth.onAuthStateChanged(async user => {
+
+  if (!user) {
+
+    currentUser = null;
+
+    $("authPage").classList.remove("hidden");
+
+    $("app").classList.add("hidden");
+
+    $("profilePage").classList.add("hidden");
+
+    return;
+
+  }
+
+
+  currentUser = user;
+
+  $("authPage").classList.add("hidden");
+
+  $("app").classList.remove("hidden");
+
+  await loadMyProfile();
+
+  loadMembers();
+
+});
+
+
+/* ==========================================
+   PROFILE
+   ========================================== */
+
+async function loadMyProfile() {
+
+  const ref = db
+    .collection("profiles")
+    .doc(currentUser.uid);
+
+  const snap = await ref.get();
+
+  if (!snap.exists) {
+
+    openProfilePage();
+
+    return;
+
+  }
+
+  currentProfile = snap.data();
+
+  updateMyHeader();
+
+}
+
+
+function updateMyHeader() {
+
+  const name = currentProfile?.name || "สมาชิก";
+
+  $("myName").textContent = name;
+
+  $("myAvatar").textContent = getInitial(name);
+
+}
+
+
+function openProfilePage() {
+
+  $("app").classList.add("hidden");
+
+  $("profilePage").classList.remove("hidden");
+
+  if (currentProfile) {
+
+    $("profileName").value =
+      currentProfile.name || "";
+
+    $("profileAge").value =
+      currentProfile.age || "";
+
+    $("profileGender").value =
+      currentProfile.gender || "";
+
+    $("profileProvince").value =
+      currentProfile.province || "";
+
+  }
+
+}
+
+
+$("editProfileBtn").onclick = () => {
+
+  $("settingsMenu").classList.add("hidden");
+
+  openProfilePage();
+
+};
+
+
+$("backAppBtn").onclick = () => {
+
+  $("profilePage").classList.add("hidden");
+
+  $("app").classList.remove("hidden");
+
+};
+
+
+$("saveProfileBtn").onclick = async () => {
+
+  const name = $("profileName").value.trim();
+
+  const age = Number($("profileAge").value);
+
+  const gender = $("profileGender").value;
+
+  const province = $("profileProvince").value;
+
+
+  if (!name) {
+
+    $("profileStatus").textContent =
+      "กรุณากรอกชื่อ";
+
+    return;
+
+  }
+
+  if (!age || age < 1 || age > 120) {
+
+    $("profileStatus").textContent =
+      "กรุณากรอกอายุให้ถูกต้อง";
+
+    return;
+
+  }
+
+  if (!gender) {
+
+    $("profileStatus").textContent =
+      "กรุณาเลือกเพศ";
+
+    return;
+
+  }
+
+  if (!province) {
+
+    $("profileStatus").textContent =
+      "กรุณาเลือกจังหวัด";
+
+    return;
+
+  }
+
+
+  try {
+
+    const ref = db
+      .collection("profiles")
+      .doc(currentUser.uid);
+
+
+    const old = await ref.get();
+
+
+    const data = {
+
+      name,
+
+      age,
+
+      gender,
+
+      province,
+
+      updatedAt:
+        firebase.firestore.FieldValue.serverTimestamp()
+
     };
 
-    const status = (message) => {
-      document.getElementById("status").textContent = message;
+
+    if (!old.exists) {
+
+      data.createdAt =
+        firebase.firestore.FieldValue.serverTimestamp();
+
+    }
+
+
+    await ref.set(data, { merge: true });
+
+
+    currentProfile = {
+
+      ...(currentProfile || {}),
+
+      ...data,
+
+      name,
+
+      age,
+
+      gender,
+
+      province
+
     };
-    const value = (id) => document.getElementById(id).value.trim();
 
-    try {
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
 
-      await setPersistence(auth, browserLocalPersistence);
+    updateMyHeader();
 
-      onAuthStateChanged(auth, (user) => {
-        document.getElementById("auth").classList.toggle("hidden", !!user);
-        document.getElementById("account").classList.toggle("hidden", !user);
-        document.getElementById("who").textContent = user?.email || "";
-        if (user) status("เข้าสู่ระบบแล้ว");
-        else status("กรุณาสมัครสมาชิกหรือเข้าสู่ระบบ");
+    $("profileStatus").textContent =
+      "บันทึกข้อมูลสำเร็จ";
+
+    setTimeout(() => {
+
+      $("profilePage").classList.add("hidden");
+
+      $("app").classList.remove("hidden");
+
+      loadMembers();
+
+    }, 700);
+
+
+  } catch (error) {
+
+    $("profileStatus").textContent =
+      "บันทึกไม่สำเร็จ: " +
+      error.message;
+
+  }
+
+};
+
+
+/* ==========================================
+   MEMBERS
+   ========================================== */
+
+async function loadMembers() {
+
+  if (unsubscribeMembers) {
+
+    unsubscribeMembers();
+
+  }
+
+
+  unsubscribeMembers = db
+    .collection("profiles")
+    .onSnapshot(snapshot => {
+
+      const search =
+        $("searchMember").value
+          .trim()
+          .toLowerCase();
+
+
+      $("memberList").replaceChildren();
+
+
+      snapshot.forEach(doc => {
+
+        const data = doc.data();
+
+        if (doc.id === currentUser.uid) {
+
+          return;
+
+        }
+
+
+        const name =
+          data.name || "สมาชิก";
+
+
+        if (
+          search &&
+          !name.toLowerCase().includes(search)
+        ) {
+
+          return;
+
+        }
+
+
+        const item =
+          document.createElement("div");
+
+        item.className = "member";
+
+
+        const avatar =
+          document.createElement("div");
+
+        avatar.className =
+          "member-avatar";
+
+        avatar.textContent =
+          getInitial(name);
+
+
+        const info =
+          document.createElement("div");
+
+        info.className =
+          "member-info";
+
+
+        const strong =
+          document.createElement("strong");
+
+        strong.textContent =
+          name;
+
+
+        const span =
+          document.createElement("span");
+
+        span.textContent =
+          data.province || "";
+
+
+        info.append(strong, span);
+
+
+        const dot =
+          document.createElement("div");
+
+        dot.className =
+          "offline-dot";
+
+
+        item.append(
+          avatar,
+          info,
+          dot
+        );
+
+
+        item.onclick = () => {
+
+          openPrivateChat(
+            doc.id,
+            name
+          );
+
+        };
+
+
+        $("memberList")
+          .appendChild(item);
+
       });
 
-      document.getElementById("signup").onclick = async () => {
-        const email = value("email");
-        const password = document.getElementById("password").value;
-        if (!email || !password) return status("กรุณากรอกอีเมลและรหัสผ่าน");
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          status("สมัครสมาชิกสำเร็จ");
-        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
-      };
 
-      document.getElementById("login").onclick = async () => {
-        const email = value("email");
-        const password = document.getElementById("password").value;
-        if (!email || !password) return status("กรุณากรอกอีเมลและรหัสผ่าน");
-        try {
-          await signInWithEmailAndPassword(auth, email, password);
-          status("เข้าสู่ระบบสำเร็จ");
-        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
-      };
+      if (!$("memberList").children.length) {
 
-      document.getElementById("reset").onclick = async () => {
-        const email = value("email");
-        if (!email) return status("กรุณากรอกอีเมลก่อนขอรีเซ็ตรหัสผ่าน");
-        try {
-          await sendPasswordResetEmail(auth, email);
-          status("ส่งลิงก์ตั้งรหัสผ่านใหม่แล้ว กรุณาตรวจอีเมล");
-        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
-      };
+        $("memberList").textContent =
+          "ยังไม่มีสมาชิกคนอื่น";
 
-      document.getElementById("logout").onclick = async () => {
-        try {
-          await signOut(auth);
-          status("ออกจากระบบแล้ว");
-        } catch (e) { status("เกิดข้อผิดพลาด: " + e.message); }
-      };
-    } catch (e) {
-      status("ตั้งค่า Firebase ไม่สำเร็จ: " + e.message);
+      }
+
+    }, error => {
+
+      console.error(error);
+
+    });
+
+}
+
+
+$("searchMember").oninput = () => {
+
+  loadMembers();
+
+};
+
+
+/* ==========================================
+   PRIVATE CHAT
+   ========================================== */
+
+function makeRoomId(uid1, uid2) {
+
+  return [uid1, uid2]
+    .sort()
+    .join("_");
+
+}
+
+
+async function openPrivateChat(
+  friendUid,
+  friendName
+) {
+
+  if (!currentUser) return;
+
+
+  currentFriend = {
+
+    uid: friendUid,
+
+    name: friendName
+
+  };
+
+
+  currentRoom =
+    makeRoomId(
+      currentUser.uid,
+      friendUid
+    );
+
+
+  $("chatTitle").textContent =
+    friendName;
+
+
+  $("chatSubtitle").textContent =
+    "แชทส่วนตัว";
+
+
+  $("messageInput").disabled =
+    false;
+
+
+  $("sendBtn").disabled =
+    false;
+
+
+  const roomRef =
+    db.collection("rooms")
+      .doc(currentRoom);
+
+
+  const roomSnap =
+    await roomRef.get();
+
+
+  if (!roomSnap.exists) {
+
+    await roomRef.set({
+
+      members: [
+        currentUser.uid,
+        friendUid
+      ].sort(),
+
+      createdAt:
+        firebase.firestore.FieldValue
+          .serverTimestamp()
+
+    });
+
+  }
+
+
+  listenMessages();
+
+}
+
+
+/* ==========================================
+   REALTIME MESSAGES
+   ========================================== */
+
+function listenMessages() {
+
+  if (unsubscribeMessages) {
+
+    unsubscribeMessages();
+
+  }
+
+
+  $("messages").replaceChildren();
+
+
+  unsubscribeMessages =
+    db.collection("rooms")
+      .doc(currentRoom)
+      .collection("messages")
+      .orderBy("createdAt")
+      .limit(100)
+      .onSnapshot(snapshot => {
+
+        $("messages")
+          .replaceChildren();
+
+
+        snapshot.forEach(doc => {
+
+          const data =
+            doc.data();
+
+
+          const message =
+            document.createElement("div");
+
+
+          message.className =
+            "message";
+
+
+          if (
+            data.senderId ===
+            currentUser.uid
+          ) {
+
+            message.classList.add("me");
+
+          }
+
+
+          const name =
+            document.createElement("div");
+
+          name.className =
+            "message-name";
+
+
+          name.textContent =
+            data.senderId ===
+            currentUser.uid
+              ? "คุณ"
+              : currentFriend?.name || "เพื่อน";
+
+
+          const text =
+            document.createElement("div");
+
+
+          text.textContent =
+            data.text || "";
+
+
+          message.append(
+            name,
+            text
+          );
+
+
+          $("messages")
+            .appendChild(message);
+
+        });
+
+
+        $("messages").scrollTop =
+          $("messages").scrollHeight;
+
+
+      }, error => {
+
+        console.error(error);
+
+      });
+
+}
+
+
+/* ==========================================
+   SEND MESSAGE
+   ========================================== */
+
+$("sendForm").onsubmit =
+  async event => {
+
+    event.preventDefault();
+
+
+    const text =
+      $("messageInput")
+        .value
+        .trim();
+
+
+    if (
+      !currentUser ||
+      !currentRoom ||
+      !text
+    ) {
+
+      return;
+
     }
-  </script>
+
+
+    try {
+
+      await db
+        .collection("rooms")
+        .doc(currentRoom)
+        .collection("messages")
+        .add({
+
+          senderId:
+            currentUser.uid,
+
+          text,
+
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+
+      $("messageInput")
+        .value = "";
+
+
+    } catch (error) {
+
+      alert(
+        "ส่งข้อความไม่สำเร็จ: " +
+        error.message
+      );
+
+    }
+
+  };
+
+
+/* ==========================================
+   SETTINGS
+   ========================================== */
+
+$("gearBtn").onclick = () => {
+
+  $("settingsMenu")
+    .classList.toggle("hidden");
+
+};
+
+
+$("changePasswordBtn").onclick =
+  async () => {
+
+    $("settingsMenu")
+      .classList.add("hidden");
+
+
+    if (!currentUser?.email) {
+
+      return;
+
+    }
+
+
+    try {
+
+      await auth.sendPasswordResetEmail(
+        currentUser.email
+      );
+
+
+      alert(
+        "ส่งลิงก์เปลี่ยนรหัสผ่านไปยังอีเมลของคุณแล้ว"
+      );
+
+
+    } catch (error) {
+
+      alert(
+        "ไม่สามารถส่งลิงก์ได้: " +
+        error.message
+      );
+
+    }
+
+  };
+
+
+$("logoutBtn").onclick =
+  async () => {
+
+    await auth.signOut();
+
+  };
+
+</script>
+
 </body>
 </html>
