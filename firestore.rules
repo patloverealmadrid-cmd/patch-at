@@ -1,9 +1,49 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+
+    function signedIn() { return request.auth != null; }
+
+    // โปรไฟล์ผู้ใช้: ทุกคนที่ล็อกอินอ่านได้ แก้ได้เฉพาะของตัวเอง
+    match /users/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == id && request.resource.size() < 300000;
+    }
+
+    // กลุ่ม: สมาชิกเท่านั้นอ่านได้ / ผู้สร้างเป็นผู้ดูแลและเพิ่ม-ลบสมาชิกได้
+    match /groups/{gid} {
+      allow read: if signedIn() && request.auth.uid in resource.data.members;
+      allow create: if signedIn()
+                    && request.resource.data.admin == request.auth.uid
+                    && request.auth.uid in request.resource.data.members
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() <= 40;
+      allow update: if signedIn()
+                    && resource.data.admin == request.auth.uid
+                    && request.resource.data.admin == request.auth.uid;
+
+      match /messages/{mid} {
+        allow read: if signedIn()
+                    && request.auth.uid in get(/databases/$(database)/documents/groups/$(gid)).data.members;
+        allow create: if signedIn()
+                      && request.auth.uid in get(/databases/$(database)/documents/groups/$(gid)).data.members
+                      && request.resource.data.uid == request.auth.uid
+                      && request.resource.size() < 900000;
+      }
+    }
+
+    // แชทส่วนตัว 1-1 (id = uidA_uidB) เฉพาะ 2 คนนั้น
+    match /dms/{dmId}/messages/{mid} {
+      allow read: if signedIn() && request.auth.uid in dmId.split('_');
+      allow create: if signedIn() && request.auth.uid in dmId.split('_')
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.size() < 900000;
+    }
+
+    // สถานะกำลังพิมพ์
+    match /typing/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn() && (request.method == 'delete' || request.resource.data.uid == request.auth.uid);
     }
   }
 }
